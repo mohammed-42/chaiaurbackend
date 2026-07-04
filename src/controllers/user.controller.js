@@ -4,9 +4,13 @@ import { User } from "../models/user.model.js"
 import {uploadOncloudinary} from "../utils/cloudinary.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
 
+
 const generateAccessAndRefreshTokens=async(userId)=>{
   try{
-    const user=User.findById(userId)
+    const user=await User.findById(userId)
+    if (!user) {
+    throw new Error("User not found");
+    }
     const accessToken=user.generateAccessToken()
     const refreshToken=user.generateRefreshToken()
 
@@ -17,6 +21,7 @@ const generateAccessAndRefreshTokens=async(userId)=>{
  
     
   }catch(error){
+    console.log(error)
     throw new ApiError(500,"somthing went wrong while generating access token ")
   }
 }
@@ -100,7 +105,7 @@ const loginUser=asynchandler(async (req,res)=>{
   //send cookie
 
   const {email,username,password}=req.body
-  if(!username || !email){
+  if(!(username || email)){
     throw new ApiError(400,"username and email are required")
   }
   const user=await User.findOne({
@@ -145,8 +150,8 @@ const logoutUser=asynchandler(async(req,res)=>{
    await User.findByIdAndUpdate(
     req.user._id,
     {
-      $set:{
-        refreshToken:undefined
+      $unset:{
+        refreshToken:1
       }
     },
     {
@@ -158,9 +163,10 @@ const logoutUser=asynchandler(async(req,res)=>{
     httpOnly:true,
     secure:true
   }
+   
   return res.status(200)
-  .clearCoookie("accessToken",options)
-  .clearCoookie("refreshToken",options)
+  .clearCookie("accessToken",options)
+  .clearCookie("refreshToken",options)
   .json(new ApiResponse(200, {},"user logged out"))
 })
 
