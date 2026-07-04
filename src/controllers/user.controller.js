@@ -142,9 +142,28 @@ const loginUser=asynchandler(async (req,res)=>{
 })
 
 const logoutUser=asynchandler(async(req,res)=>{
-  
+   await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set:{
+        refreshToken:undefined
+      }
+    },
+    {
+      new :true
+    }
+   )
+
+   const options={
+    httpOnly:true,
+    secure:true
+  }
+  return res.status(200)
+  .clearCoookie("accessToken",options)
+  .clearCoookie("refreshToken",options)
+  .json(new ApiResponse(200, {},"user logged out"))
 })
 
 
 
-export {registerUser,loginUser}
+export {registerUser,loginUser,logoutUser}
