@@ -319,6 +319,76 @@ const updateCoverImage=asynchandler(async(req,res)=>{
    .json(new ApiResponse(200),user,"cover image updated successfully")
 })
 
+const getUserChannelProfile=asynchandler(async(req,res)=>{
+     const {username}=req.params
+     if(!username?.trim()){
+      throw new ApiError(400,"user name not found");
+     }
+
+     //User.find({username}) we can do like this also but using aggregation pipeline we can do in better way
+     const channel = await User.aggregate([
+      {
+        $match:{
+          username:username?.toLowerCase()
+        }
+      },
+      {
+        $lookup:{
+           from :"subscriptions",
+           localField :"_id",
+           foreignField :"channel",
+           as:"subscribers"
+        }
+      },
+      {
+        $lookup:{
+          from :"subscriptions",
+          localField :"_id",
+          foreignField :"subscribers",
+          as:"subscribedTo"
+        }
+      },
+      {
+        $addFields:{
+          subscribercount:{
+            $size:"$subscribers"
+          },
+          channelsubscribedtoCount:{
+            $size:"$subscribedTo"
+          },
+          isSubscribed:{
+            $cond:{
+              if:{$in:[req.user?._id,"$subscribers.subscriber"]},
+              then:  true,
+              else: false
+            }
+          }
+        }
+      },
+      {
+        $project:{
+          username: 1,
+          fullname: 1,
+          subscribercount: 1,
+          channelsubscribedtoCount: 1,
+          isSubscribed: 1,
+          avatar: 1,
+          coverImage: 1,
+          email: 1
+        }
+      }
+      
+     ])
+     if(!channel.length){
+      throw new ApiError(400,"channel not found")
+     }
+     return res
+     .status(200)
+     .json(
+      new ApiResponse(200,channel[0],"channel fetched successfully")
+     )
+})
+
 export {
   registerUser
   ,loginUser
@@ -330,4 +400,8 @@ export {
   ,updateAccountDetails
   ,updateAvatar
   ,updateCoverImage
+  ,getUserChannelProfile
 }
+
+
+//delete the url or image from cloudinary after updating make a utility for that todo for me lets do 
