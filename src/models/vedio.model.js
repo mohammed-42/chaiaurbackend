@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2"
-const vedioSchema=new mongoose({
-  vedioFile:{
+const videoSchema=new mongoose.Schema({
+  videoFile:{
     type:String,
     required:true
   },
@@ -26,14 +26,14 @@ const vedioSchema=new mongoose({
     default:0
   },
   isPublished:{
-    type:boolean,
+    type : Boolean,
     default:true
   },
   owner:{
-    type:Schema.Types.ObjectId,
+    type:mongoose.Schema.Types.ObjectId,
     ref:"User"
 
   }
-},{timeStamps})
-vedioSchema.plugin(mongooseAggrigatePaginate);
-export const vedio=mongoose.model("vedio",vedioSchema);
+},{timeStamps:true})
+videoSchema.plugin(mongooseAggregatePaginate);
+export const Video=mongoose.model("Video",videoSchema);

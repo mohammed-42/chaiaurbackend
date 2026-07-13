@@ -1,16 +1,79 @@
-import {asynchandler} from "../utils/asynchandler.js";
+import mongoose, {isValidObjectId} from "mongoose"
+import {Video} from "../models/video.model.js"
+import {User} from "../models/user.model.js"
 import {ApiError} from "../utils/ApiError.js"
-import { vedio } from "../models/vedio.model.js"
-import {loginUser} from "../controllers/user.controller.js"
+import {ApiResponse} from "../utils/ApiResponse.js"
+import {asynchandler} from "../utils/asynchandler.js"
+import {uploadOnCloudinary} from "../utils/cloudinary.js"
 
-const vedioupload = asynchandler(async(req,res)=>{
-  if(!loginUser){
-    throw new ApiError(400,"please login before uploading vedio")
-  }
-  
+const getAllVideo = asynchandler(async(req,res)=>{
+   const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
+   filter={};
+   const vedios = await Vedio.find({})
+})
+const publishAvideo = asynchandler(async(req,res)=>{
+    const {title,description}=req.body
+    if((!title || !title.trim())){
+      throw new ApiError(400,"title is missing")
+    }
+    if((!description || !description.trim())){
+      throw new ApiError(400,"description is missing")
+    }
+    const videoLocal=req.files?.videoFile?.[0]?.path;
+    const thumbnail=req.files?.videothumbnail?.[0]?.path;
+
+    if(!videoLocal){
+      throw new ApiError(400,"video file not recived")
+    }
+    if(!thumbnail){
+      throw new ApiError(400,"thumbnail is missing please upload thumbnail")
+    }
+    const videofile=await uploadOnCloudinary(videoLocal)
+    if(!videofile){
+      throw new ApiError(400,"video file upload failed")
+    }
+    const thumbfile=await uploadOnCloudinary(thumbnail)
+    if(!thumbfile){
+      throw new ApiError(400,"thumbnail file upload failed")
+    }
+
+    const createVideo=await Video.create({
+      title,
+      description,
+      videoFile:videofile.url,
+      thumbnail:thumbfile.url,
+      duration:videofile.duration,
+      owner:req.user._id
+    })
+
+    if(!createVideo){
+      throw new ApiError(400,"video creation failed")
+    }
+
+    return res.
+    status(201)
+    .json(new ApiResponse(201,createVideo,"video created successfully"))
+})
+const getVideoById = asynchandler(async(req,res)=>{
+   const { videoId }=req.params
+
+   const getvideo=await Video.findById(videoId)
+   if(!getvideo){
+      throw new ApiError(404,"vedio not found")
+   }
+
+   return res
+   .status(200)
+   .json(new ApiResponse(200,getvideo,"got the vedio"))
 })
 
 
-//first user should be loggedin
-//if user click upload then upload the vedio
-//upload vedios and related fields
+
+export {publishAvedio}
+//get all vedios
+//publish vedio
+//getvedio by id
+//updateVedio
+//update vedio 
+//delete vedio
+//togglepublishvedio

@@ -401,7 +401,4 @@ export {
   ,updateAvatar
   ,updateCoverImage
   ,getUserChannelProfile
-}
-
-
-//delete the url or image from cloudinary after updating make a utility for that todo for me lets do 
+}//delete the url or image from cloudinary after updating make a utility for that todo for me lets do 
