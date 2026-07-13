@@ -66,7 +66,37 @@ const getVideoById = asynchandler(async(req,res)=>{
    .status(200)
    .json(new ApiResponse(200,getvideo,"got the vedio"))
 })
-
+const updateVideo = asynchandler(async(req,res)=>{
+  const {videoId} = req.params
+  const {title,description}=req.body
+  const thumbnail=req.files?.videothumbnail?.[0]?.path;
+   if(!videoId){
+    throw new ApiError(400,"video not found")
+  }
+  let newupload
+  if(thumbnail){
+    newupload=await uploadOnCloudinary(thumbnail)
+  }
+ 
+  const videoupdate=await Video.findByIdAndUpdate(
+    videoId,
+    {
+    $set:{
+      title:title,
+      description:description
+    }
+  },
+  {
+    new:true
+  }
+  )
+  if(!videoupdate){
+    throw new ApiError(400,"updated failed")
+  }
+  return res
+  .status(200)
+  .json(new ApiResponse(200,videoupdate,"vedio updated successfully"))
+})
 
 
 export {publishAvedio}
