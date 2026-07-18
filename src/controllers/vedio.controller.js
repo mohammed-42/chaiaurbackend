@@ -121,12 +121,26 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
     if(!videoId){
       throw new ApiError(404,"vedio not found")
     }
-    if(Video.isPublished){
-       
+    const video = await Video.findById(videoId)
+    if(!video){
+      throw new ApiError(404,"vedio not found error")
     }
+    video.isPublished = !video.isPublished
+    await video.save()
+    return res
+    .status(200)
+    .json(new ApiResponse(200,video,`video ${video.isPublished ? "published" : "unpublished"}`))
+
 })
 
-export {publishAvideo,getVideoById,updateVideo,deleteVideo}
+export {
+  getAllVideo,
+  publishAvideo,
+  getVideoById,
+  updateVideo,
+  deleteVideo,
+  togglePublishStatus
+}
 //get all vedios
 //publish vedio
 //getvedio by id
