@@ -6,11 +6,41 @@ import {ApiResponse} from "../utils/ApiResponse.js"
 import {asynchandler} from "../utils/asynchandler.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 
-const getAllVideo = asynchandler(async(req,res)=>{
-   const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
-   filter={};
-   const vedios = await Vedio.find({})
+const getAllVideo = asynchandler(async (req, res) => {
+  const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
+
+  const matchStage = {}
+  if (userId) {
+    matchStage.owner = new mongoose.Types.ObjectId(userId)
+  }
+  if (query) {
+    matchStage.title = { $regex: query, $options: "i" }
+  }
+
+  const sortStage = {}
+  if (sortBy) {
+    sortStage[sortBy] = sortType === "asc" ? 1 : -1
+  } else {
+    sortStage.createdAt = -1
+  }
+
+  const aggregate = Video.aggregate([
+    { $match: matchStage },
+    { $sort: sortStage }
+  ])
+
+  const options = {
+    page: parseInt(page),
+    limit: parseInt(limit)
+  }
+
+  const result = await Video.aggregatePaginate(aggregate, options)
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, result, "videos fetched successfully"))
 })
+
 const publishAvideo = asynchandler(async(req,res)=>{
     const {title,description}=req.body
     if((!title || !title.trim())){
