@@ -1,10 +1,10 @@
 import mongoose, {isValidObjectId} from "mongoose"
-import {Video} from "../models/video.model.js"
+import {Video} from "../models/vedio.model.js"
 import {User} from "../models/user.model.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asynchandler} from "../utils/asynchandler.js"
-import {uploadOnCloudinary} from "../utils/cloudinary.js"
+import {uploadOncloudinary} from "../utils/cloudinary.js"
 
 const getAllVideo = asynchandler(async (req, res) => {
   const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
@@ -133,7 +133,7 @@ const updateVideo = asynchandler(async(req,res)=>{
   .status(200)
   .json(new ApiResponse(200,videoupdate,"vedio updated successfully"))
 })
-const deleteVideo = asyncHandler(async (req, res) => {
+const deleteVideo = asynchandler(async (req, res) => {
     const { videoId } = req.params
     if(!videoId){
       throw new ApiError(400,"please enter vedio to delete")
@@ -146,7 +146,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200,"vedio deleted successfully"))
 })
-const togglePublishStatus = asyncHandler(async (req, res) => {
+const togglePublishStatus = asynchandler(async (req, res) => {
     const { videoId } = req.params
     if(!videoId){
       throw new ApiError(404,"vedio not found")
