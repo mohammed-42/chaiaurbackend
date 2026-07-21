@@ -58,11 +58,12 @@ const publishAvideo = asynchandler(async(req,res)=>{
     if(!thumbnail){
       throw new ApiError(400,"thumbnail is missing please upload thumbnail")
     }
-    const videofile=await uploadOnCloudinary(videoLocal)
+    const videofile=await uploadOncloudinary(videoLocal)
+    
     if(!videofile){
       throw new ApiError(400,"video file upload failed")
     }
-    const thumbfile=await uploadOnCloudinary(thumbnail)
+    const thumbfile=await uploadOncloudinary(thumbnail)
     if(!thumbfile){
       throw new ApiError(400,"thumbnail file upload failed")
     }

@@ -14,6 +14,6 @@ router.route("/publish").post(
 )
 
 router.route("/get-vedios").get(getAllVideo);
-console.log("Registered video routes:", router.stack.map(r => r.route?.path))
+
 
 export default router;
