@@ -106,7 +106,7 @@ const updateVideo = asynchandler(async(req,res)=>{
   }
   let newupload
   if(thumbnail){
-    newupload=await uploadOnCloudinary(thumbnail)
+    newupload=await uploadOncloudinary(thumbnail)
   }
     const updateField={
     title:title,

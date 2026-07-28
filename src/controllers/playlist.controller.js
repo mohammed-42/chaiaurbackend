@@ -2,10 +2,10 @@ import mongoose, {isValidObjectId} from "mongoose"
 import {Playlist} from "../models/playlist.model.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
-import {asyncHandler} from "../utils/asyncHandler.js"
+import {asynchandler} from "../utils/asynchandler.js"
 
 
-const createPlaylist = asyncHandler(async (req, res) => {
+const createPlaylist = asynchandler(async (req, res) => {
     const {name, description} = req.body
 
     //TODO: create playlist
@@ -26,7 +26,7 @@ const createPlaylist = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200,"play list created successfully"))
 })
 
-const getUserPlaylists = asyncHandler(async (req, res) => {
+const getUserPlaylists = asynchandler(async (req, res) => {
     const {userId} = req.params
     //TODO: get user playlists
     if(!userId){
@@ -41,7 +41,7 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200,"user playlist fetched successfully"))
 })
 
-const getPlaylistById = asyncHandler(async (req, res) => {
+const getPlaylistById = asynchandler(async (req, res) => {
     const {playlistId} = req.params
     //TODO: get playlist by id
     if(!playlistId){
@@ -56,7 +56,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200,"user playlist fetched successfully"))
 })
 
-const addVideoToPlaylist = asyncHandler(async (req, res) => {
+const addVideoToPlaylist = asynchandler(async (req, res) => {
     const {playlistId, videoId} = req.params
     if(!isValidObjectId(playlistId)){
         throw new ApiError(400,"enter a play list name")
@@ -80,7 +80,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
 
 })
 
-const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
+const removeVideoFromPlaylist = asynchandler(async (req, res) => {
     const {playlistId, videoId} = req.params
 
     if(!isValidObjectId(playlistId)){
@@ -114,7 +114,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, updatedPlaylist, "Video removed from playlist successfully"))
 })
 
-const deletePlaylist = asyncHandler(async (req, res) => {
+const deletePlaylist = asynchandler(async (req, res) => {
     const {playlistId} = req.params
 
     if(!isValidObjectId(playlistId)){
@@ -138,7 +138,7 @@ const deletePlaylist = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Playlist deleted successfully"))
 })
 
-const updatePlaylist = asyncHandler(async (req, res) => {
+const updatePlaylist = asynchandler(async (req, res) => {
     const {playlistId} = req.params
     const {name, description} = req.body
 

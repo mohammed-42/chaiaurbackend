@@ -4,6 +4,7 @@ import {User} from "../models/user.model.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asynchandler} from "../utils/asynchandler.js"
+import {Video} from "../models/vedio.model.js"
 
 const createTweet = asynchandler(async (req, res) => {
     //TODO: create tweet
@@ -30,7 +31,7 @@ const createTweet = asynchandler(async (req, res) => {
     .json(new ApiResponse(201, comment, "Comment added successfully"))
 })
 
-const getUserTweets = asyncHandler(async (req, res) => {
+const getUserTweets = asynchandler(async (req, res) => {
     const {userId} = req.params
 
     if(!isValidObjectId(userId)){
@@ -57,7 +58,7 @@ const updateTweet = asynchandler(async (req, res) => {
         throw new ApiError(400, "content is required")
     }
     
-    const tweet = await Tweet.findById(commentId)
+    const tweet = await Tweet.findById(tweetId)
     
     if(!tweet){
         throw new ApiError(404, "tweet not found")
@@ -88,7 +89,7 @@ const deleteTweet = asynchandler(async (req, res) => {
             throw new ApiError(400, "invalid tweet id")
         }
     
-        const tweet = await Tweet.findById(commentId)
+        const tweet = await Tweet.findById(tweettId)
     
         if(!tweet){
             throw new ApiError(404, "tweet not found")
